@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>هدية عيد ميلاد 🌹</title>
+
+<style>
+* { box-sizing: border-box; direction: rtl; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+  background: url("https://files.catbox.moe/lmmo7u.jpg") center/cover no-repeat fixed;
+}
+
+/* شاشة الرسائل */
+.overlay {
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  text-align: center;
+  color: #fff;
+  max-width: 85%;
+}
+
+#text {
+  font-size: 28px;
+  line-height: 1.9;
+  min-height:160px;
+  text-shadow:0 0 15px rgba(255,182,193,0.9);
+}
+
+button {
+  margin-top:25px;
+  padding:14px 40px;
+  font-size:20px;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  background:linear-gradient(45deg,#ff5f9e,#ff8fb1);
+  color:#fff;
+}
+
+/* الصفحة الأخيرة */
+#finalPage {
+  display: none;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.45);
+  position: relative;
+}
+
+/* البوكيه */
+#bouquet {
+  width: 390px;
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+/* نبض */
+@keyframes pulse {
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  50%  { transform: translate(-50%, -50%) scale(1.08); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* الورود */
+.rose {
+  position: absolute;
+  width: 80px;
+  pointer-events: none;
+  transition: all 1.6s ease;
+}
+
+/* مطر الورد */
+.falling-rose{
+  position: fixed;
+  top: -100px;
+  width: 70px;
+  animation: fall linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes fall{
+  to{
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* الألعاب النارية */
+#fireworks{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" src="https://files.catbox.moe/qzip64.mp3"></audio>
+<audio id="fireSound" src="https://files.catbox.moe/3a4y06.mp3"></audio>
+
+<div class="overlay" id="overlay">
+  <div class="box">
+    <div id="text"></div>
+    <button id="start">بدء الرسالة 🌹</button>
+    <button id="next" style="display:none;">التالي</button>
+  </div>
+</div>
+
+<div id="finalPage">
+  <img id="bouquet" src="https://files.catbox.moe/282syq.png">
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+const textBox = document.getElementById("text");
+const startBtn = document.getElementById("start");
+const nextBtn  = document.getElementById("next");
+const music    = document.getElementById("music");
+const fireSound = document.getElementById("fireSound");
+const overlay  = document.getElementById("overlay");
+const finalPage = document.getElementById("finalPage");
+const bouquet  = document.getElementById("bouquet");
+
+/* الرسائل */
+const messages = [
+  "كل عام وأنتِ بخير 🎉\nفي هذا اليوم الجميل أحببت أن أرسل لك تهنئة صادقة من القلب.",
+  "أحب أن أكتب لكِ هذا الكلام وكأنني أحدث قلبك مباشرة 🌸  لأنكِ لستِ مجرد شخص يمر في الحياة، أنتِ أثر، ووجودك يترك شيئًا جميلًا لا يُنسى. فيكِ هدوء يشبه الطمأنينة حين تضيع الكلمات، ودفء يجعل القرب منك راحة حتى لو كان عن بُعد. طريقتك في الحديث، في التفكير، وحتى في الصمت، كلها تحمل جمالًا خاصًا يصعب وصفه. أنتِ من الأشخاص الذين لا يحتاجون إلى لفت الانتباه، لأن حضورهم وحده يكفي. روحك ناعمة لكنها قوية، لطيفة لكنها ثابتة، جميلة ليس فقط في المظهر بل في الجوهر. كل من يعرفك يشعر أن الحياة بجانبك أخف، وأصدق، وأقرب للقلب. أتمنى لكِ أيامًا تليق بكِ، أيامًا تمتلئ بالضحك الحقيقي، وبالطمأنينة التي تمنيتِها يومًا، وبالفرح الذي يأتي دون سبب… فقط لأنكِ تستحقين."
+];
+
+let msgIndex = 0;
+let charIndex = 0;
+
+function typeText(text){
+  textBox.innerHTML="";
+  charIndex=0;
+  const typing = setInterval(()=>{
+    textBox.innerHTML += text.charAt(charIndex);
+    charIndex++;
+    if(charIndex === text.length){
+      clearInterval(typing);
+      nextBtn.style.display = "inline-block";
+    }
+  }, 40);
+}
+
+startBtn.onclick = ()=>{
+  music.play();
+  typeText(messages[0]);
+  startBtn.style.display = "none";
+};
+
+nextBtn.onclick = ()=>{
+  nextBtn.style.display = "none";
+  msgIndex++;
+  if(msgIndex < messages.length){
+    typeText(messages[msgIndex]);
+  } else {
+    overlay.style.display = "none";
+    finalPage.style.display = "block";
+    startRoseRain();
+  }
+};
+
+/* نقاط رقم 19 */
+const points = [
+  [0,0],[0,60],[0,120],[0,180],[0,240],[0,300],
+  [160,20],[220,0],[280,20],[300,80],[280,140],[160,140],[140,80],
+  [250,210],[240,260],[225,310]
+];
+
+/* مطر الورد */
+function startRoseRain(){
+  for(let i=0;i<150;i++){
+    setTimeout(()=>{
+      const r = document.createElement("img");
+      r.src = "https://files.catbox.moe/5mtmcy.png";
+      r.className = "falling-rose";
+      r.style.left = Math.random()*window.innerWidth+"px";
+      r.style.animationDuration = (5+Math.random()*4)+"s";
+      document.body.appendChild(r);
+      setTimeout(()=>r.remove(),10000);
+    }, i*200);
+  }
+}
+
+/* الألعاب النارية */
+const fw = document.getElementById("fireworks");
+const fctx = fw.getContext("2d");
+fw.width = innerWidth;
+fw.height = innerHeight;
+let particles=[];
+
+function firework(x,y){
+  for(let i=0;i<60;i++){
+    particles.push({x,y,vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,l:1});
+  }
+}
+
+function animateFW(){
+  fctx.clearRect(0,0,fw.width,fw.height);
+  particles.forEach((p,i)=>{
+    p.x+=p.vx; p.y+=p.vy; p.l-=0.02;
+    fctx.fillStyle=`rgba(255,120,160,${p.l})`;
+    fctx.beginPath();
+    fctx.arc(p.x,p.y,2,0,Math.PI*2);
+    fctx.fill();
+    if(p.l<=0) particles.splice(i,1);
+  });
+  requestAnimationFrame(animateFW);
+}
+animateFW();
+
+bouquet.onclick = ()=>{
+  fireSound.play();
+  bouquet.style.display="none";
+
+  const cx = innerWidth/2-100;
+  const cy = innerHeight/2-150;
+
+  points.forEach((p,i)=>{
+    const r=document.createElement("img");
+    r.src="https://files.catbox.moe/5mtmcy.png";
+    r.className="rose";
+    r.style.left=bouquet.offsetLeft+"px";
+    r.style.top=bouquet.offsetTop+"px";
+    finalPage.appendChild(r);
+    setTimeout(()=>{
+      r.style.left=cx+p[0]+"px";
+      r.style.top =cy+p[1]+"px";
+    },i*80);
+  });
+
+  setInterval(()=>{
+    firework(innerWidth/2+(Math.random()*200-100), innerHeight/3);
+  },700);
+};
+</script>
+
+</body>
+</html>
